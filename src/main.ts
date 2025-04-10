@@ -8,8 +8,12 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  const port = process.env.PORT || 3000;
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://vinisiqueira.com.br'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: false,
+  });
 
-  await app.listen(port);
+  await app.listen(process.env.SERVER_PORT || 3001);
 }
 bootstrap();
