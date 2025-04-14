@@ -6,6 +6,7 @@ import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
+  IsOptional,
 } from 'class-validator';
 
 @ValidatorConstraint({ name: 'isEmailOrPhone', async: false })
@@ -29,8 +30,8 @@ export class CreateContactDto {
   fullName: string;
 
   @IsString()
-  @MinLength(2)
   @MaxLength(100)
+  @IsOptional()
   companyName: string;
 
   @IsString()
