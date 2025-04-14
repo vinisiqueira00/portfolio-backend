@@ -9,7 +9,7 @@ export class ContactController {
 
   @Post()
   async create(@Body() dto: CreateContactDto) {
-    if (dto.message.trim().length === 0) return;
+    console.log('#TESTE_1', dto);
 
     return this.contactService.createContact(dto);
   }

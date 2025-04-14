@@ -11,17 +11,23 @@ export class ContactService {
   ) {}
 
   async createContact(dto: CreateContactDto) {
-    const { data, error } = await this.supabase.from('contacts').insert([
-      {
-        message: dto.message,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    try {
+      const { data, error } = await this.supabase.from('contacts').insert([
+        {
+          full_name: dto.fullName,
+          company_name: dto.companyName,
+          contact: dto.contact,
+          subject: dto.subject,
+          message: dto.message,
+          created_at: new Date().toISOString(),
+        },
+      ]);
 
-    console.log(error);
+      if (error) throw error;
 
-    if (error) throw error;
-
-    return data;
+      return data;
+    } catch (err) {
+      console.error(err);
+    }
   }
 }

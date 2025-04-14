@@ -8,8 +8,18 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  const corsOrigins = process.env.SERVER_ORIGINS?.split(',').map((origin) =>
+    origin.trim(),
+  );
+
   app.enableCors({
-    origin: ['https://vinisiqueira.com.br', 'https://www.vinisiqueira.com.br'],
+    origin: (origin, callback) => {
+      if (!origin || corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: false,
   });
