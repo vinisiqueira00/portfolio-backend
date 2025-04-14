@@ -13,7 +13,7 @@ import {
 class IsEmailOrPhoneConstraint implements ValidatorConstraintInterface {
   validate(value: string) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\+?[0-9]{8,16}$/;
+    const phoneRegex = /^\d{11}$/;
 
     return emailRegex.test(value) || phoneRegex.test(value);
   }
