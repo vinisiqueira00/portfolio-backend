@@ -1,33 +1,31 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 
-import { CreateContactDto } from './dto/create-contact.dto';
+import { ContactRepository } from './contact.repository';
+import { EmailService } from '../email/email.service';
+import { subDays } from 'date-fns';
+import { EmailUtils } from 'src/email/email.utils';
 
 @Injectable()
 export class ContactService {
   constructor(
-    @Inject('SUPABASE_CLIENT')
-    private readonly supabase: SupabaseClient,
+    private readonly contactRepository: ContactRepository,
+    private readonly emailService: EmailService,
+    private readonly emailUtils: EmailUtils,
   ) {}
 
-  async createContact(dto: CreateContactDto) {
-    try {
-      const { data, error } = await this.supabase.from('contacts').insert([
-        {
-          full_name: dto.fullName,
-          company_name: dto.companyName,
-          contact: dto.contact,
-          subject: dto.subject,
-          message: dto.message,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+  @Cron('0 3 * * *')
+  async report() {
+    const yesterday = subDays(new Date(), 1).toLocaleDateString();
 
-      if (error) throw error;
+    const contacts = await this.contactRepository.listYesterday();
 
-      return data;
-    } catch (err) {
-      console.error(err);
-    }
+    const body = this.emailUtils.generateContactsEmailHtml(contacts);
+
+    await this.emailService.sendEmail({
+      to: 'vinicius.siqueira642@gmail.com',
+      subject: `Relatório de Contatos - ${yesterday}`,
+      body,
+    });
   }
 }

@@ -1,16 +1,23 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 
-import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
+import { ContactRepository } from './contact.repository';
+import { ContactService } from './contact.service';
 
 @Controller('contact')
 export class ContactController {
-  constructor(private readonly contactService: ContactService) {}
+  constructor(
+    private readonly contactRepository: ContactRepository,
+    private readonly contactService: ContactService,
+  ) {}
 
   @Post()
-  async create(@Body() dto: CreateContactDto) {
-    console.log('#TESTE_1', dto);
+  async create(@Body() newContact: CreateContactDto) {
+    return this.contactRepository.create(newContact);
+  }
 
-    return this.contactService.createContact(dto);
+  @Get()
+  async report() {
+    return this.contactService.report();
   }
 }
